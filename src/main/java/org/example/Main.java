@@ -87,10 +87,13 @@ public class Main {
         imprimirMatrizDeRiesgos(riesgos);
 
         List<CultivoSeleccionado> res = planificador.obtenerPlanificacion(cultivos, riesgos, "Otoño");
-        imprimirResultado(res);
+
+        //imprimirResultado(res);
+
     }
 
     private static void imprimirMatrizDeRiesgos(double[][] riesgos) {
+        System.out.println("Matriz de riesgos");
         for (int i = 0; i < 100; i++) {
             for (int j = 0; j < 100; j++) {
                 System.out.print(riesgos[i][j] + "\t");
@@ -100,6 +103,8 @@ public class Main {
     }
 
     private static void imprimirResultado(List<CultivoSeleccionado> res) {
+
+        System.out.println("Matriz de resultados");
         for (CultivoSeleccionado cultivo : res) {
             System.out.println(cultivo);
         }
