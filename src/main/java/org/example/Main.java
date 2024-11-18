@@ -88,7 +88,7 @@ public class Main {
 
         List<CultivoSeleccionado> res = planificador.obtenerPlanificacion(cultivos, riesgos, "Otoño");
 
-        //imprimirResultado(res);
+        imprimirResultado(res);
 
     }
 
