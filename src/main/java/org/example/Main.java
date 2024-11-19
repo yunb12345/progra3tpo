@@ -9,6 +9,8 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
+        long inicio = System.currentTimeMillis();
+
         PlanificarCultivosImplementacion planificador = new PlanificarCultivosImplementacion();
 
         List<Cultivo> cultivos = new ArrayList<>();
@@ -90,6 +92,11 @@ public class Main {
 
         imprimirResultado(res);
 
+        long fin = System.currentTimeMillis();
+
+        double tiempo = (double) ((fin - inicio)/1000);
+
+        System.out.println(tiempo +" segundos");
     }
 
     private static void imprimirMatrizDeRiesgos(double[][] riesgos) {

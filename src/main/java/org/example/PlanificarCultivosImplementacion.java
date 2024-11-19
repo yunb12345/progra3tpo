@@ -7,8 +7,8 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
 
     @Override
     public List<CultivoSeleccionado> obtenerPlanificacion(List<Cultivo> var1, double[][] var2, String var3) {
-        double[][] campo = new double[20][20];
-        MejorGanancia ganancia = new MejorGanancia();
+        double[][] campo = new double[100][100];
+        Resultado ganancia = new Resultado();
         List<CultivoSeleccionado> distribucionActual = new ArrayList<>();
         List<CultivoSeleccionado> mejorDistribucion = new ArrayList<>();
         return BackTrack(0, var1, campo, 0,
@@ -41,11 +41,11 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
     public boolean AreaValida(Coordenada esquinaIzq1, Coordenada esquinaDer1, List<CultivoSeleccionado> distribucionActual) {
         for (CultivoSeleccionado cultivo : distribucionActual) {
             if (colisionan(esquinaIzq1, esquinaDer1, cultivo.getEsquinaSuperiorIzquierda(), cultivo.getEsquinaInferiorDerecha())) {
-                System.out.println("Área inválida por colisión: (" + esquinaIzq1.getX() + "," + esquinaIzq1.getY() + ") con cultivo " + cultivo.getNombreCultivo());
+                //System.out.println("Área inválida por colisión: (" + esquinaIzq1.getX() + "," + esquinaIzq1.getY() + ") con cultivo " + cultivo.getNombreCultivo());
                 return false;
             }
         }
-        System.out.println("Área valida (" + esquinaIzq1.getX() + "," + esquinaIzq1.getY() + ")");
+        //System.out.println("Área valida (" + esquinaIzq1.getX() + "," + esquinaIzq1.getY() + ")");
         return true;
     }
 
@@ -58,24 +58,44 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
         }
         return true;
     }
-    class MejorGanancia{
-        double ganancia = 0;
+    class Resultado{
+        double mejorGanancia = 0;
+    }
+
+    public boolean tieneMejorGanancia(List<CultivoSeleccionado> distribucionActual,List<CultivoSeleccionado> mejorDistribucion,double ganancia,double gananciaActual){
+        double mejorGanancia = 0;
+        int i =0;
+        while(i<distribucionActual.size() && mejorDistribucion.size()>=distribucionActual.size()){
+            mejorGanancia += mejorDistribucion.get(i).getGananciaObtenida();
+            i++;
+        }
+        if(i==mejorDistribucion.size()){
+            if(gananciaActual+ganancia>mejorGanancia|| distribucionActual==null || mejorDistribucion==null){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }else{
+            if(gananciaActual+ganancia>mejorGanancia + mejorDistribucion.get(i).getGananciaObtenida() || distribucionActual==null || mejorDistribucion==null){
+                return true;
+            }
+            return false;
+        }
     }
 
     public List<CultivoSeleccionado> BackTrack(int nivel, List<Cultivo> cultivos, double[][] matrizCampo, double gananciaActual,
                                                List<CultivoSeleccionado> distribucionActual,
-                                               MejorGanancia mejorGanancia, List<CultivoSeleccionado> mejorDistribucion, String temporadaActual, double[][] matrizRiesgo) {
+                                               Resultado mejorGanancia, List<CultivoSeleccionado> mejorDistribucion, String temporadaActual, double[][] matrizRiesgo) {
 
-        System.out.println("Entrando al Nivel: " + nivel + ", Ganancia Actual: " + gananciaActual + "mejorGanancia:" + mejorGanancia);
+        //System.out.println("Entrando al Nivel: " + nivel + ", Ganancia Actual: " + gananciaActual + "mejorGanancia:" + mejorGanancia);
         if (nivel >= cultivos.size()) {
-            System.out.println("Nivel máximo alcanzado, evaluando ganancia...");
-            if (gananciaActual > mejorGanancia.ganancia) {
-                mejorGanancia.ganancia = gananciaActual;
+            //System.out.println("Nivel máximo alcanzado, evaluando ganancia...");
+            if (gananciaActual > mejorGanancia.mejorGanancia) {
+                mejorGanancia.mejorGanancia = gananciaActual;
                 mejorDistribucion.clear();
                 mejorDistribucion.addAll(new ArrayList<>(distribucionActual));
-                System.out.println("Nueva mejor ganancia encontrada: " + mejorGanancia);
-                //distribucionActual.removeLast();
-                //System.out.println("Removiendo cultivo: " + " en nivel: " + nivel);
+                //System.out.println("Nueva mejor ganancia encontrada: " + mejorGanancia);
             }
             return mejorDistribucion;
         }
@@ -84,27 +104,19 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
 
         // Usamos equals para comparar cadenas en lugar de !=
         if (!cultivo.getTemporadaOptima().equals(temporadaActual)) {
-            System.out.println("Saltando cultivo " + cultivo.getNombre() + " (temporada incorrecta)");
+            //System.out.println("Saltando cultivo " + cultivo.getNombre() + " (temporada incorrecta)");
             return BackTrack(nivel + 1, cultivos, matrizCampo, gananciaActual, distribucionActual,
                     mejorGanancia, mejorDistribucion, temporadaActual, matrizRiesgo);
         }
 
-        //Coordenada esquinaSuperiorIzquierda = new Coordenada();
-        //Coordenada esquinaInferiorDerecha = new Coordenada();
         double riesgoPromedio = 0;
         double ganancia = 0;
         CultivoSeleccionado cultivoSeleccionado = new CultivoSeleccionado();
         for (int n = 1; n <= 10; n++) {
             for (int m = 1; m <= 10; m++) {
                 if(n+m<11){
-                    for (int x = 0; x <= 20 - n; x++) {
-                        for (int y = 0; y <= 20 - m; y++) {
-                            /*
-                            esquinaSuperiorIzquierda.setX(x);
-                            esquinaSuperiorIzquierda.setY(y);
-                            esquinaInferiorDerecha.setX(x + n);
-                            esquinaInferiorDerecha.setY(y + m);
-                             */
+                    for (int x = 0; x <= 100 - n; x++) {
+                        for (int y = 0; y <= 100 - m; y++) {
                             Coordenada esquinaSuperiorIzquierda = new Coordenada(x,y);
                             Coordenada esquinaInferiorDerecha = new Coordenada(x+n,y+n);
 
@@ -116,25 +128,16 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
                                 CultivoSeleccionado cultivoSeleccionado1 = new CultivoSeleccionado(cultivo.getNombre(),esquinaSuperiorIzquierda,esquinaInferiorDerecha,
                                         cultivo.getInversionRequerida(),riesgoPromedio,ganancia);
 
-                                if(ganancia>mejorGanancia.ganancia){
-                                    System.out.println("Añadiendo cultivo: " + cultivo.getNombre() + " en nivel: " + nivel);
+                                if(tieneMejorGanancia(distribucionActual,mejorDistribucion,ganancia,gananciaActual)){
+                                    //System.out.println("Añadiendo cultivo: " + cultivo.getNombre() + " en nivel: " + nivel);
                                     distribucionActual.add(cultivoSeleccionado1); //agrego a la distribucion actual
-                                    mejorDistribucion = BackTrack(nivel+1,cultivos,matrizCampo,gananciaActual + ganancia,
+                                    BackTrack(nivel+1,cultivos,matrizCampo,gananciaActual + ganancia,
                                             distribucionActual,mejorGanancia,mejorDistribucion,temporadaActual,matrizRiesgo);
-                                    System.out.println("Bajando al nivel:" + nivel + " cultivo:" + cultivos.get(nivel).getNombre());
+
+                                    //System.out.println("Bajando al nivel:" + nivel + " cultivo:" + cultivos.get(nivel).getNombre());
                                     distribucionActual.removeLast();
-                                    System.out.println("Removiendo cultivo: " + cultivo.getNombre() + " en nivel: " + nivel);
+                                    //System.out.println("Removiendo cultivo: " + cultivo.getNombre() + " en nivel: " + nivel);
                                 }
-
-                                //System.out.println("Removiendo cultivo: " + cultivo.getNombre() + " en nivel: " + nivel);
-                                //distribucionActual.remove(distribucionActual.size() - 1);
-
-
-
-
-                                //probamos con todas las posibles pos y tamaños
-
-
                             }
                         }
                     }
