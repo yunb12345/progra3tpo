@@ -80,13 +80,23 @@ public class Main {
         cultivos.add(cultivo);
 
         cultivo = new Cultivo();
+        cultivo.setNombre("Soja");
+        cultivo.setCostoPorParcela(185.0);
+        cultivo.setInversionRequerida(1000);
+        cultivo.setPrecioDeVentaPorParcela(550);
+        cultivo.setTemporadaOptima("Invierno");
+        cultivos.add(cultivo);
+
+        /*
+        cultivo = new Cultivo();
         cultivo.setNombre("Banana");
         cultivo.setCostoPorParcela(185.0);
-        cultivo.setInversionRequerida(100);
-        cultivo.setPrecioDeVentaPorParcela(100);
+        cultivo.setInversionRequerida(1000);
+        cultivo.setPrecioDeVentaPorParcela(550);
         cultivo.setTemporadaOptima("Otoño");
         cultivos.add(cultivo);
 
+         */
 
         double[][] riesgos = new double[100][100];
         for (int i = 0; i < 100; i++) {
