@@ -7,16 +7,15 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
 
     @Override
     public List<CultivoSeleccionado> obtenerPlanificacion(List<Cultivo> var1, double[][] var2, String var3) {
-        double[][] campo = new double[100][100];
         Resultado ganancia = new Resultado();
         List<CultivoSeleccionado> distribucionActual = new ArrayList<>();
         List<CultivoSeleccionado> mejorDistribucion = new ArrayList<>();
-        return BackTrack(0, var1, campo, 0,
+        return BackTrack(0, var1, 0,
                 distribucionActual,
                 ganancia, mejorDistribucion, var3, var2);
     }
 
-    public double calcularPotencial(int x, int y, int xf, int yf, Cultivo cultivo, double[][] matrizRiesgo) {
+    public double CalcularPotencial(int x, int y, int xf, int yf, Cultivo cultivo, double[][] matrizRiesgo) {
         double suma = 0;
         for (int i = x; i < xf; i++) {
             for (int j = y; j < yf; j++) {
@@ -26,7 +25,7 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
         return suma;
     }
 
-    public double calcularRiesgoPromedio(double[][] matrizRiesgo, int filaInicio, int columnaInicio, int filaFin, int columnaFin) {
+    public double CalcularRiesgoPromedio(double[][] matrizRiesgo, int filaInicio, int columnaInicio, int filaFin, int columnaFin) {
         double suma = 0;
         int conteo = 0;
         for (int i = filaInicio; i < filaFin; i++) {
@@ -40,7 +39,7 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
 
     public boolean AreaValida(Coordenada esquinaIzq1, Coordenada esquinaDer1, List<CultivoSeleccionado> distribucionActual) {
         for (CultivoSeleccionado cultivo : distribucionActual) {
-            if (colisionan(esquinaIzq1, esquinaDer1, cultivo.getEsquinaSuperiorIzquierda(), cultivo.getEsquinaInferiorDerecha())) {
+            if (Colisionan(esquinaIzq1, esquinaDer1, cultivo.getEsquinaSuperiorIzquierda(), cultivo.getEsquinaInferiorDerecha())) {
                 //System.out.println("Área inválida por colisión: (" + esquinaIzq1.getX() + "," + esquinaIzq1.getY() + ") con cultivo " + cultivo.getNombreCultivo());
                 return false;
             }
@@ -49,7 +48,7 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
         return true;
     }
 
-    public boolean colisionan(Coordenada esquinaIzq1, Coordenada esquinaDer1, Coordenada esquinaIzq2, Coordenada esquinaDer2) {
+    public boolean Colisionan(Coordenada esquinaIzq1, Coordenada esquinaDer1, Coordenada esquinaIzq2, Coordenada esquinaDer2) {
         if (esquinaIzq1.getX() > esquinaDer2.getX() || esquinaIzq2.getX() > esquinaDer1.getX()) {
             return false;
         }
@@ -62,7 +61,7 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
         double mejorGanancia = 0;
     }
 
-    public boolean tieneMejorGanancia(List<CultivoSeleccionado> distribucionActual,List<CultivoSeleccionado> mejorDistribucion,double ganancia,double gananciaActual){
+    public boolean TieneMejorGanancia(List<CultivoSeleccionado> distribucionActual,List<CultivoSeleccionado> mejorDistribucion,double ganancia,double gananciaActual){
         double mejorGanancia = 0;
         int i =0;
         while(i<distribucionActual.size() && mejorDistribucion.size()>=distribucionActual.size()){
@@ -84,7 +83,7 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
         }
     }
 
-    public List<CultivoSeleccionado> BackTrack(int nivel, List<Cultivo> cultivos, double[][] matrizCampo, double gananciaActual,
+    public List<CultivoSeleccionado> BackTrack(int nivel, List<Cultivo> cultivos, double gananciaActual,
                                                List<CultivoSeleccionado> distribucionActual,
                                                Resultado mejorGanancia, List<CultivoSeleccionado> mejorDistribucion, String temporadaActual, double[][] matrizRiesgo) {
 
@@ -105,7 +104,7 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
         // Usamos equals para comparar cadenas en lugar de !=
         if (!cultivo.getTemporadaOptima().equals(temporadaActual)) {
             //System.out.println("Saltando cultivo " + cultivo.getNombre() + " (temporada incorrecta)");
-            return BackTrack(nivel + 1, cultivos, matrizCampo, gananciaActual, distribucionActual,
+            return BackTrack(nivel + 1, cultivos, gananciaActual, distribucionActual,
                     mejorGanancia, mejorDistribucion, temporadaActual, matrizRiesgo);
         }
 
@@ -121,17 +120,17 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
                             Coordenada esquinaInferiorDerecha = new Coordenada(x+n,y+n);
 
                             if (AreaValida(esquinaSuperiorIzquierda, esquinaInferiorDerecha, distribucionActual)) {
-                                riesgoPromedio = calcularRiesgoPromedio(matrizRiesgo, x, y, x + n, y + m);
-                                double potencialTotal = calcularPotencial(x, y, x + n, y + m, cultivo, matrizRiesgo);
+                                riesgoPromedio = CalcularRiesgoPromedio(matrizRiesgo, x, y, x + n, y + m);
+                                double potencialTotal = CalcularPotencial(x, y, x + n, y + m, cultivo, matrizRiesgo);
                                 ganancia = potencialTotal - cultivo.getInversionRequerida();
 
                                 CultivoSeleccionado cultivoSeleccionado1 = new CultivoSeleccionado(cultivo.getNombre(),esquinaSuperiorIzquierda,esquinaInferiorDerecha,
                                         cultivo.getInversionRequerida(),riesgoPromedio,ganancia);
 
-                                if(tieneMejorGanancia(distribucionActual,mejorDistribucion,ganancia,gananciaActual)){
+                                if(TieneMejorGanancia(distribucionActual,mejorDistribucion,ganancia,gananciaActual)){
                                     //System.out.println("Añadiendo cultivo: " + cultivo.getNombre() + " en nivel: " + nivel);
                                     distribucionActual.add(cultivoSeleccionado1); //agrego a la distribucion actual
-                                    BackTrack(nivel+1,cultivos,matrizCampo,gananciaActual + ganancia,
+                                    BackTrack(nivel+1,cultivos,gananciaActual + ganancia,
                                             distribucionActual,mejorGanancia,mejorDistribucion,temporadaActual,matrizRiesgo);
 
                                     //System.out.println("Bajando al nivel:" + nivel + " cultivo:" + cultivos.get(nivel).getNombre());
