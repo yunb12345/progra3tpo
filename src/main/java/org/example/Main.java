@@ -71,6 +71,7 @@ public class Main {
         cultivo.setTemporadaOptima("Invierno");
         cultivos.add(cultivo);
 
+
         cultivo = new Cultivo();
         cultivo.setNombre("Brócoli");
         cultivo.setCostoPorParcela(115.0);
@@ -87,7 +88,6 @@ public class Main {
         cultivo.setTemporadaOptima("Invierno");
         cultivos.add(cultivo);
 
-        /*
         cultivo = new Cultivo();
         cultivo.setNombre("Banana");
         cultivo.setCostoPorParcela(185.0);
@@ -96,7 +96,7 @@ public class Main {
         cultivo.setTemporadaOptima("Otoño");
         cultivos.add(cultivo);
 
-         */
+
 
         double[][] riesgos = new double[100][100];
         for (int i = 0; i < 100; i++) {
