@@ -9,15 +9,12 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
     @Override
     public List<CultivoSeleccionado> obtenerPlanificacion(List<Cultivo> var1, double[][] var2, String var3) {
         Resultado ganancia = new Resultado();
-        ResultadoRellenar gananciaRellenar = new ResultadoRellenar();
         List<CultivoSeleccionado> distribucionActual = new ArrayList<>();
         List<CultivoSeleccionado> mejorDistribucion = new ArrayList<>();
         List<CultivoSeleccionado> resultado = BackTrack(0, var1, 0,
                 distribucionActual,
                 ganancia, mejorDistribucion, var3, var2);
-        List<CultivoSeleccionado> distribucion = mejorDistribucion;
-        List<CultivoSeleccionado> resultadoRellenado = Rellenar(resultado.getLast().getEsquinaSuperiorIzquierda().getX(),resultado.getLast().getEsquinaSuperiorIzquierda().getY(),
-                var1.getLast(),0,distribucion,gananciaRellenar,mejorDistribucion,var2);
+        List<CultivoSeleccionado> resultadoRellenado = Rellenar(var1.getLast(),resultado,var2);
         return resultadoRellenado;
     }
 
@@ -61,9 +58,9 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
             maxX = Math.max(maxX, cultivoEsquinaDer.getX());
             maxY = Math.max(maxY, cultivoEsquinaDer.getY());
         }
-        int anchoRectangulo = maxX - minX + 1;
-        int altoRectangulo = maxY - minY + 1;
-        return (anchoRectangulo<11 && altoRectangulo<11);
+        int anchoRectangulo = maxX - minX -1;
+        int altoRectangulo = maxY - minY -1;
+        return (anchoRectangulo<11 || altoRectangulo<11);
         //System.out.println("Área valida (" + esquinaIzq1.getX() + "," + esquinaIzq1.getY() + ")");
     }
     public boolean Colisionan(Coordenada esquinaIzq1, Coordenada esquinaDer1, Coordenada esquinaIzq2, Coordenada esquinaDer2) {
@@ -77,9 +74,6 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
     }
     class Resultado{
         double mejorGanancia = 0;
-    }
-    class ResultadoRellenar{
-        double mejorGanancia = Double.MIN_VALUE;
     }
 
     public boolean TieneMejorGanancia(List<CultivoSeleccionado> distribucionActual,List<CultivoSeleccionado> mejorDistribucion,double ganancia,double gananciaActual){
@@ -103,54 +97,33 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
             return false;
         }
     }
-    public List<CultivoSeleccionado> Rellenar(int x,int y,Cultivo cultivo, double gananciaActual,
-                                              List<CultivoSeleccionado> distribucionActual,
-                                              ResultadoRellenar mejorGanancia, List<CultivoSeleccionado> mejorDistribucion, double[][] matrizRiesgo){
+    public List<CultivoSeleccionado> Rellenar(Cultivo cultivo, List<CultivoSeleccionado> distribucionActual,double[][] matrizRiesgo){
 
-        if(x>=100 || y>=100){
-            if (gananciaActual > mejorGanancia.mejorGanancia) {
-                mejorGanancia.mejorGanancia = gananciaActual;
-                mejorDistribucion.clear();
-                mejorDistribucion.addAll(new ArrayList<>(distribucionActual));
-                //System.out.println("Nueva mejor ganancia encontrada: " + mejorGanancia);
-            }
-            return mejorDistribucion;
-        }
         double riesgoPromedio = 0;
         double ganancia = 0;
 
         for(int n=1;n<=10;n++){
             for(int m =1;m<=10;m++){
-                if(n+m<11){
-                    for (int xf = x ; xf <= 100 - n; xf++) {
-                        for (int yf = y; yf <= 100 - m; yf++) {
-                            Coordenada esquinaSuperiorIzquierda = new Coordenada(xf,yf);
-                            Coordenada esquinaInferiorDerecha = new Coordenada(xf+n,yf+m);
+                if(n+m<=11){
+                    for (int x =0 ; x <= 100 - n; x++) {
+                        for (int y = 0; y <= 100 - m; y++) {
+                            Coordenada esquinaSuperiorIzquierda = new Coordenada(x,y);
+                            Coordenada esquinaInferiorDerecha = new Coordenada(x+n,y+m);
                             if (AreaValida(esquinaSuperiorIzquierda, esquinaInferiorDerecha, distribucionActual)) {
-                                riesgoPromedio = CalcularRiesgoPromedio(matrizRiesgo, xf, yf, xf + n, yf + m);
-                                double potencialTotal = CalcularPotencial(xf, yf, xf + n, yf + m, cultivo, matrizRiesgo);
+                                riesgoPromedio = CalcularRiesgoPromedio(matrizRiesgo, x, y, x + n, y + m);
+                                double potencialTotal = CalcularPotencial(x, y, x + n, y + m, cultivo, matrizRiesgo);
                                 ganancia = potencialTotal - cultivo.getInversionRequerida();
 
                                 CultivoSeleccionado cultivoSeleccionado1 = new CultivoSeleccionado(cultivo.getNombre(),esquinaSuperiorIzquierda,esquinaInferiorDerecha,
                                         cultivo.getInversionRequerida(),riesgoPromedio,ganancia);
-
-
-                                if(TieneMejorGanancia(distribucionActual,mejorDistribucion,ganancia,gananciaActual)){
-                                    //System.out.println("Añadiendo cultivo: " + cultivo.getNombre() + " en nivel: " + nivel);
-                                    distribucionActual.add(cultivoSeleccionado1); //agrego a la distribucion actual
-                                    Rellenar(xf+n,xf+m,cultivo,gananciaActual + ganancia,
-                                            distribucionActual,mejorGanancia,mejorDistribucion,matrizRiesgo);
-                                    //System.out.println("Bajando al nivel:" + nivel + " cultivo:" + cultivos.get(nivel).getNombre());
-                                    distribucionActual.removeLast();
-                                    //System.out.println("Removiendo cultivo: " + cultivo.getNombre() + " en nivel: " + nivel);
-                                }
+                                distribucionActual.add(cultivoSeleccionado1); //agrego a la distribucion actual
                             }
                         }
                     }
                 }
             }
         }
-        return mejorDistribucion;
+        return distribucionActual;
 
     }
     public List<CultivoSeleccionado> BackTrack(int nivel, List<Cultivo> cultivos, double gananciaActual,
@@ -180,11 +153,11 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
         double ganancia = 0;
         for (int n = 1; n <= 10; n++) {
             for (int m = 1; m <= 10; m++) {
-                if(n+m<11){
+                if(n+m<=11){
                     for (int x = 0; x <= 100 - n; x++) {
                         for (int y = 0; y <= 100 - m; y++) {
                             Coordenada esquinaSuperiorIzquierda = new Coordenada(x,y);
-                            Coordenada esquinaInferiorDerecha = new Coordenada(x+n,y+n);
+                            Coordenada esquinaInferiorDerecha = new Coordenada(x+n,y+m);
 
                             if (AreaValida(esquinaSuperiorIzquierda, esquinaInferiorDerecha, distribucionActual)) {
                                 riesgoPromedio = CalcularRiesgoPromedio(matrizRiesgo, x, y, x + n, y + m);
