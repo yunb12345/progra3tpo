@@ -2,17 +2,23 @@ package org.example;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 public class PlanificarCultivosImplementacion implements PlanificarCultivos {
 
     @Override
     public List<CultivoSeleccionado> obtenerPlanificacion(List<Cultivo> var1, double[][] var2, String var3) {
         Resultado ganancia = new Resultado();
+        ResultadoRellenar gananciaRellenar = new ResultadoRellenar();
         List<CultivoSeleccionado> distribucionActual = new ArrayList<>();
         List<CultivoSeleccionado> mejorDistribucion = new ArrayList<>();
-        return BackTrack(0, var1, 0,
+        List<CultivoSeleccionado> resultado = BackTrack(0, var1, 0,
                 distribucionActual,
                 ganancia, mejorDistribucion, var3, var2);
+        List<CultivoSeleccionado> distribucion = mejorDistribucion;
+        List<CultivoSeleccionado> resultadoRellenado = Rellenar(resultado.getLast().getEsquinaSuperiorIzquierda().getX(),resultado.getLast().getEsquinaSuperiorIzquierda().getY(),
+                var1.getLast(),0,distribucion,gananciaRellenar,mejorDistribucion,var2);
+        return resultadoRellenado;
     }
 
     public double CalcularPotencial(int x, int y, int xf, int yf, Cultivo cultivo, double[][] matrizRiesgo) {
@@ -72,6 +78,9 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
     class Resultado{
         double mejorGanancia = 0;
     }
+    class ResultadoRellenar{
+        double mejorGanancia = Double.MIN_VALUE;
+    }
 
     public boolean TieneMejorGanancia(List<CultivoSeleccionado> distribucionActual,List<CultivoSeleccionado> mejorDistribucion,double ganancia,double gananciaActual){
         double mejorGanancia = 0;
@@ -94,13 +103,62 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
             return false;
         }
     }
+    public List<CultivoSeleccionado> Rellenar(int x,int y,Cultivo cultivo, double gananciaActual,
+                                              List<CultivoSeleccionado> distribucionActual,
+                                              ResultadoRellenar mejorGanancia, List<CultivoSeleccionado> mejorDistribucion, double[][] matrizRiesgo){
 
+        if(x>=100 || y>=100){
+            if (gananciaActual > mejorGanancia.mejorGanancia) {
+                mejorGanancia.mejorGanancia = gananciaActual;
+                mejorDistribucion.clear();
+                mejorDistribucion.addAll(new ArrayList<>(distribucionActual));
+                //System.out.println("Nueva mejor ganancia encontrada: " + mejorGanancia);
+            }
+            return mejorDistribucion;
+        }
+        double riesgoPromedio = 0;
+        double ganancia = 0;
+
+        for(int n=1;n<=10;n++){
+            for(int m =1;m<=10;m++){
+                if(n+m<11){
+                    for (int xf = x ; xf <= 100 - n; xf++) {
+                        for (int yf = y; yf <= 100 - m; yf++) {
+                            Coordenada esquinaSuperiorIzquierda = new Coordenada(xf,yf);
+                            Coordenada esquinaInferiorDerecha = new Coordenada(xf+n,yf+m);
+                            if (AreaValida(esquinaSuperiorIzquierda, esquinaInferiorDerecha, distribucionActual)) {
+                                riesgoPromedio = CalcularRiesgoPromedio(matrizRiesgo, xf, yf, xf + n, yf + m);
+                                double potencialTotal = CalcularPotencial(xf, yf, xf + n, yf + m, cultivo, matrizRiesgo);
+                                ganancia = potencialTotal - cultivo.getInversionRequerida();
+
+                                CultivoSeleccionado cultivoSeleccionado1 = new CultivoSeleccionado(cultivo.getNombre(),esquinaSuperiorIzquierda,esquinaInferiorDerecha,
+                                        cultivo.getInversionRequerida(),riesgoPromedio,ganancia);
+
+
+                                if(TieneMejorGanancia(distribucionActual,mejorDistribucion,ganancia,gananciaActual)){
+                                    //System.out.println("Añadiendo cultivo: " + cultivo.getNombre() + " en nivel: " + nivel);
+                                    distribucionActual.add(cultivoSeleccionado1); //agrego a la distribucion actual
+                                    Rellenar(xf+n,xf+m,cultivo,gananciaActual + ganancia,
+                                            distribucionActual,mejorGanancia,mejorDistribucion,matrizRiesgo);
+                                    //System.out.println("Bajando al nivel:" + nivel + " cultivo:" + cultivos.get(nivel).getNombre());
+                                    distribucionActual.removeLast();
+                                    //System.out.println("Removiendo cultivo: " + cultivo.getNombre() + " en nivel: " + nivel);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return mejorDistribucion;
+
+    }
     public List<CultivoSeleccionado> BackTrack(int nivel, List<Cultivo> cultivos, double gananciaActual,
                                                List<CultivoSeleccionado> distribucionActual,
                                                Resultado mejorGanancia, List<CultivoSeleccionado> mejorDistribucion, String temporadaActual, double[][] matrizRiesgo) {
 
         //System.out.println("Entrando al Nivel: " + nivel + ", Ganancia Actual: " + gananciaActual + "mejorGanancia:" + mejorGanancia);
-        if (nivel >= cultivos.size()) {
+        if (nivel == cultivos.size()) {
             if (gananciaActual > mejorGanancia.mejorGanancia) {
                 mejorGanancia.mejorGanancia = gananciaActual;
                 mejorDistribucion.clear();
