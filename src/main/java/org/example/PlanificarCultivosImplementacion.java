@@ -38,16 +38,28 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
     }
 
     public boolean AreaValida(Coordenada esquinaIzq1, Coordenada esquinaDer1, List<CultivoSeleccionado> distribucionActual) {
+        int minX = esquinaIzq1.getX();
+        int minY = esquinaIzq1.getY();
+        int maxX = esquinaDer1.getX();
+        int maxY = esquinaDer1.getY();
+
         for (CultivoSeleccionado cultivo : distribucionActual) {
             if (Colisionan(esquinaIzq1, esquinaDer1, cultivo.getEsquinaSuperiorIzquierda(), cultivo.getEsquinaInferiorDerecha())) {
                 //System.out.println("Área inválida por colisión: (" + esquinaIzq1.getX() + "," + esquinaIzq1.getY() + ") con cultivo " + cultivo.getNombreCultivo());
-                return false;
+                    return false;
             }
+            Coordenada cultivoEsquinaIzq = cultivo.getEsquinaSuperiorIzquierda();
+            Coordenada cultivoEsquinaDer = cultivo.getEsquinaInferiorDerecha();
+            minX = Math.min(minX, cultivoEsquinaIzq.getX());
+            minY = Math.min(minY, cultivoEsquinaIzq.getY());
+            maxX = Math.max(maxX, cultivoEsquinaDer.getX());
+            maxY = Math.max(maxY, cultivoEsquinaDer.getY());
         }
+        int anchoRectangulo = maxX - minX + 1;
+        int altoRectangulo = maxY - minY + 1;
+        return (anchoRectangulo<11 && altoRectangulo<11);
         //System.out.println("Área valida (" + esquinaIzq1.getX() + "," + esquinaIzq1.getY() + ")");
-        return true;
     }
-
     public boolean Colisionan(Coordenada esquinaIzq1, Coordenada esquinaDer1, Coordenada esquinaIzq2, Coordenada esquinaDer2) {
         if (esquinaIzq1.getX() > esquinaDer2.getX() || esquinaIzq2.getX() > esquinaDer1.getX()) {
             return false;
@@ -68,7 +80,7 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
             mejorGanancia += mejorDistribucion.get(i).getGananciaObtenida();
             i++;
         }
-        if(i==mejorDistribucion.size()){
+        if(i==mejorDistribucion.size()){ // esto es para cuando no entra al primer while.
             if(gananciaActual+ganancia>mejorGanancia|| distribucionActual==null || mejorDistribucion==null){
                 return true;
             }
@@ -89,7 +101,6 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
 
         //System.out.println("Entrando al Nivel: " + nivel + ", Ganancia Actual: " + gananciaActual + "mejorGanancia:" + mejorGanancia);
         if (nivel >= cultivos.size()) {
-            //System.out.println("Nivel máximo alcanzado, evaluando ganancia...");
             if (gananciaActual > mejorGanancia.mejorGanancia) {
                 mejorGanancia.mejorGanancia = gananciaActual;
                 mejorDistribucion.clear();
@@ -107,10 +118,8 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
             return BackTrack(nivel + 1, cultivos, gananciaActual, distribucionActual,
                     mejorGanancia, mejorDistribucion, temporadaActual, matrizRiesgo);
         }
-
         double riesgoPromedio = 0;
         double ganancia = 0;
-        CultivoSeleccionado cultivoSeleccionado = new CultivoSeleccionado();
         for (int n = 1; n <= 10; n++) {
             for (int m = 1; m <= 10; m++) {
                 if(n+m<11){
@@ -126,6 +135,7 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
 
                                 CultivoSeleccionado cultivoSeleccionado1 = new CultivoSeleccionado(cultivo.getNombre(),esquinaSuperiorIzquierda,esquinaInferiorDerecha,
                                         cultivo.getInversionRequerida(),riesgoPromedio,ganancia);
+
 
                                 if(TieneMejorGanancia(distribucionActual,mejorDistribucion,ganancia,gananciaActual)){
                                     //System.out.println("Añadiendo cultivo: " + cultivo.getNombre() + " en nivel: " + nivel);

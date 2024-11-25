@@ -80,6 +80,8 @@ public class Main {
         cultivo.setTemporadaOptima("Otoño");
         cultivos.add(cultivo);
 
+        /*
+
         cultivo = new Cultivo();
         cultivo.setNombre("Soja");
         cultivo.setCostoPorParcela(185.0);
@@ -96,6 +98,7 @@ public class Main {
         cultivo.setTemporadaOptima("Otoño");
         cultivos.add(cultivo);
 
+         */
 
 
         double[][] riesgos = new double[100][100];
