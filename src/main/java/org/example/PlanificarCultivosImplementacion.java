@@ -113,10 +113,12 @@ public class PlanificarCultivosImplementacion implements PlanificarCultivos {
         double mejorGananciaGlobal = Double.NEGATIVE_INFINITY;
 
         for (Cultivo cultivo : cultivos) {
-            double gananciaCultivo = CalcularPotencialTotal(cultivo, matrizRiesgo) - cultivo.getInversionRequerida();
-            if (gananciaCultivo > mejorGananciaGlobal) {
-                mejorGananciaGlobal = gananciaCultivo;
-                mejorCultivo = cultivo;
+            if(Objects.equals(cultivo.getTemporadaOptima(), "Otoño")){
+                double gananciaCultivo = CalcularPotencialTotal(cultivo, matrizRiesgo) - cultivo.getInversionRequerida();
+                if (gananciaCultivo > mejorGananciaGlobal) {
+                    mejorGananciaGlobal = gananciaCultivo;
+                    mejorCultivo = cultivo;
+                }
             }
         }
 

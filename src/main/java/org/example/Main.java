@@ -44,7 +44,7 @@ public class Main {
         cultivo.setCostoPorParcela(110.0);
         cultivo.setInversionRequerida(2500);
         cultivo.setPrecioDeVentaPorParcela(600);
-        cultivo.setTemporadaOptima("Otoño");
+        cultivo.setTemporadaOptima("Verano");
         cultivos.add(cultivo);
 
         cultivo = new Cultivo();
@@ -52,7 +52,7 @@ public class Main {
         cultivo.setCostoPorParcela(90.0);
         cultivo.setInversionRequerida(1200);
         cultivo.setPrecioDeVentaPorParcela(430);
-        cultivo.setTemporadaOptima("Otoño");
+        cultivo.setTemporadaOptima("Verano");
         cultivos.add(cultivo);
 
         cultivo = new Cultivo();
@@ -60,7 +60,7 @@ public class Main {
         cultivo.setCostoPorParcela(130.0);
         cultivo.setInversionRequerida(2200);
         cultivo.setPrecioDeVentaPorParcela(580);
-        cultivo.setTemporadaOptima("Otoño");
+        cultivo.setTemporadaOptima("Verano");
         cultivos.add(cultivo);
 
         cultivo = new Cultivo();
@@ -68,7 +68,7 @@ public class Main {
         cultivo.setCostoPorParcela(85.0);
         cultivo.setInversionRequerida(1400);
         cultivo.setPrecioDeVentaPorParcela(460);
-        cultivo.setTemporadaOptima("Otoño");
+        cultivo.setTemporadaOptima("Verano");
         cultivos.add(cultivo);
 
 
@@ -123,9 +123,9 @@ public class Main {
 
         long fin = System.currentTimeMillis();
 
-        double tiempo = (double) ((fin - inicio)/1000);
+        double tiempo = (double) ((fin - inicio)/1000.0);
 
-        System.out.println(tiempo +" segundos");
+        System.out.println(String.format("Tiempo de ejecución: %.3f segundos", tiempo));
     }
 
     private static void imprimirMatrizDeRiesgos(double[][] riesgos) {
