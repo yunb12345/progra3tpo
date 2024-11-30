@@ -44,7 +44,7 @@ public class Main {
         cultivo.setCostoPorParcela(110.0);
         cultivo.setInversionRequerida(2500);
         cultivo.setPrecioDeVentaPorParcela(600);
-        cultivo.setTemporadaOptima("Verano");
+        cultivo.setTemporadaOptima("Otoño");
         cultivos.add(cultivo);
 
         cultivo = new Cultivo();
@@ -52,7 +52,7 @@ public class Main {
         cultivo.setCostoPorParcela(90.0);
         cultivo.setInversionRequerida(1200);
         cultivo.setPrecioDeVentaPorParcela(430);
-        cultivo.setTemporadaOptima("Primavera");
+        cultivo.setTemporadaOptima("Otoño");
         cultivos.add(cultivo);
 
         cultivo = new Cultivo();
@@ -60,7 +60,7 @@ public class Main {
         cultivo.setCostoPorParcela(130.0);
         cultivo.setInversionRequerida(2200);
         cultivo.setPrecioDeVentaPorParcela(580);
-        cultivo.setTemporadaOptima("Verano");
+        cultivo.setTemporadaOptima("Otoño");
         cultivos.add(cultivo);
 
         cultivo = new Cultivo();
@@ -68,7 +68,7 @@ public class Main {
         cultivo.setCostoPorParcela(85.0);
         cultivo.setInversionRequerida(1400);
         cultivo.setPrecioDeVentaPorParcela(460);
-        cultivo.setTemporadaOptima("Invierno");
+        cultivo.setTemporadaOptima("Otoño");
         cultivos.add(cultivo);
 
 
@@ -77,11 +77,18 @@ public class Main {
         cultivo.setCostoPorParcela(115.0);
         cultivo.setInversionRequerida(1800);
         cultivo.setPrecioDeVentaPorParcela(510);
+        cultivo.setTemporadaOptima("Verano");
+        cultivos.add(cultivo);
+        /*
+        cultivo = new Cultivo();
+        cultivo.setNombre("Soja");
+        cultivo.setCostoPorParcela(120.0);
+        cultivo.setInversionRequerida(1800);
+        cultivo.setPrecioDeVentaPorParcela(510);
         cultivo.setTemporadaOptima("Otoño");
         cultivos.add(cultivo);
 
         /*
-
         cultivo = new Cultivo();
         cultivo.setNombre("Soja");
         cultivo.setCostoPorParcela(185.0);
@@ -97,6 +104,7 @@ public class Main {
         cultivo.setPrecioDeVentaPorParcela(550);
         cultivo.setTemporadaOptima("Otoño");
         cultivos.add(cultivo);
+
 
          */
 
